@@ -1,0 +1,194 @@
+//=====================================================================================
+//                   makefile to build mosquitto in aosp source tree                      |
+//=====================================================================================
+
+//=====================================================================================
+//                           build libmosquitto.so                                         |
+//=====================================================================================
+
+cc_library_shared {
+    name: "libmosquitto",
+    srcs: [
+        "lib/mosquitto.c",
+        "lib/actions.c",
+        "lib/callbacks.c",
+        "lib/connect.c",
+        "lib/handle_auth.c",
+        "lib/handle_connack.c",
+        "lib/handle_disconnect.c",
+        "lib/handle_ping.c",
+        "lib/handle_pubackcomp.c",
+        "lib/handle_publish.c",
+        "lib/handle_pubrec.c",
+        "lib/handle_pubrel.c",
+        "lib/handle_suback.c",
+        "lib/handle_unsuback.c",
+        "lib/helpers.c",
+        "lib/logging_mosq.c",
+        "lib/loop.c",
+        "lib/memory_mosq.c",
+        "lib/messages_mosq.c",
+        "lib/net_mosq.c",
+        "lib/options.c",
+        "lib/packet_datatypes.c",
+        "lib/packet_mosq.c",
+        "lib/property_mosq.c",
+        "lib/read_handle.c",
+        "lib/send_connect.c",
+        "lib/send_disconnect.c",
+        "lib/send_mosq.c",
+        "lib/send_publish.c",
+        "lib/send_subscribe.c",
+        "lib/send_unsubscribe.c",
+        "lib/socks_mosq.c",
+        "lib/srv_mosq.c",
+        "lib/thread_mosq.c",
+        "lib/time_mosq.c",
+        "lib/tls_mosq.c",
+        "lib/utf8_mosq.c",
+        "lib/util_mosq.c",
+        "lib/util_topic.c",
+        "lib/will_mosq.c",
+        "lib/cpp/mosquittopp.cpp",
+    ],
+
+    cflags: [
+        "-fPIC",
+        "-D_FILE_OFFSET_BITS=64",
+        "-D_LARGEFILE_SOURCE",
+        "-DHAVE_CONFIG_H",
+        "-DHAVE_JS_FORK=1",
+        "-DWITH_TLS",
+        "-DWITH_TLS_PSK",
+        "-DWITH_THREADING",
+        "-DWITH_SOCKS",
+        "-DWITH_BORINGSSL",
+    ],
+
+    shared_libs: [
+        "libcrypto",
+        "libssl",
+    ],
+
+    local_include_dirs: [
+        "lib",
+        "lib/cpp",
+        "src",
+        "src/deps",
+    ],
+
+    export_include_dirs: [
+        ".",
+    ],
+
+    // support use it in vendor modules
+    vendor_available:true,
+}
+
+
+//=====================================================================================
+//                           build libmosquitto_service.so                                         |
+//=====================================================================================
+
+cc_library_shared {
+    name: "libmosquitto_service",
+    srcs: [
+        "src/mosquitto.c",
+        "lib/alias_mosq.c",
+        "src/bridge.c",
+        "src/conf.c",
+        "src/conf_includedir.c",
+        "src/context.c",
+        "src/database.c",
+        "src/handle_connack.c",
+        "src/handle_connect.c",
+        "lib/handle_ping.c",
+        "lib/handle_pubackcomp.c",
+        "src/handle_publish.c",
+        "lib/handle_pubrec.c",
+        "lib/handle_pubrel.c",
+        "lib/handle_suback.c",
+        "src/handle_subscribe.c",
+        "lib/handle_unsuback.c",
+        "src/handle_unsubscribe.c",
+        "src/logging.c",
+        "src/loop.c",
+        "lib/memory_mosq.c",
+        "src/net.c",
+        "lib/net_mosq.c",
+        "lib/packet_mosq.c",
+        "src/persist_read.c",
+        "src/persist_read_v5.c",
+        "src/persist_read_v234.c",
+        "src/persist_write.c",
+        "src/persist_write_v5.c",
+        "src/plugin.c",
+        "src/property_broker.c",
+        "src/read_handle.c",
+        "src/security.c",
+        "src/security_default.c",
+        "lib/send_connect.c",
+        "src/send_auth.c",
+        "src/send_connack.c",
+        "lib/send_disconnect.c",
+        "lib/send_mosq.c",
+        "lib/send_publish.c",
+        "src/send_suback.c",
+        "src/send_unsuback.c",
+        "lib/send_subscribe.c",
+        "lib/send_unsubscribe.c",
+        "src/service.c",
+        "src/session_expiry.c",
+        "src/signals.c",
+        "src/subs.c",
+        "src/sys_tree.c",
+        "lib/time_mosq.c",
+        "lib/tls_mosq.c",
+        "lib/utf8_mosq.c",
+        "lib/util_mosq.c",
+        "src/websockets.c",
+        "src/will_delay.c",
+        "lib/will_mosq.c",
+        "src/mosquitto_server.c",
+        "src/mosquitto_serverpp.cpp",
+    ],
+
+    cflags: [
+        "-fPIC",
+        "-D_FILE_OFFSET_BITS=64",
+        "-D_LARGEFILE_SOURCE",
+        "-DHAVE_CONFIG_H",
+        "-DHAVE_JS_FORK=1",
+        "-DVERSION=1.5",
+        "-DWITH_BROKER",
+        "-DWITH_TLS",
+        "-DWITH_TLS_PSK",
+        "-DWITH_BRIDGE",
+        "-DWITH_PERSISTENCE",
+        "-DWITH_SYS_TREE",
+        "-DWITH_MEMORY_TRACKING",
+        "-DWITH_EC",
+        "-DWITH_EPOLL",
+        "-DWITH_BORINGSSL",
+    ],
+
+    shared_libs: [
+        "libmosquitto",
+        "libcrypto",
+        "libssl",
+    ],
+
+    local_include_dirs: [
+        "lib",
+        "src",
+        "src/deps",
+    ],
+
+    export_include_dirs: [
+        ".",
+    ],
+
+    // support use it in vendor modules
+    vendor_available:true,
+}
+

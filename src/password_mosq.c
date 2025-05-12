@@ -62,6 +62,7 @@ Contributors:
 #ifdef WITH_TLS
 int base64__encode(unsigned char *in, unsigned int in_len, char **encoded)
 {
+#ifndef WITH_BORINGSSL
 	BIO *bmem, *b64;
 	BUF_MEM *bptr;
 
@@ -85,11 +86,26 @@ int base64__encode(unsigned char *in, unsigned int in_len, char **encoded)
 	BIO_free_all(b64);
 
 	return 0;
+#else
+    size_t encoded_len = ((in_len + 2) / 3) * 4 + 1; // +1 for null terminator
+    *encoded = (unsigned char *)malloc(encoded_len);
+    if (!*out) return -1;
+
+    int ret = EVP_EncodeBlock(*encoded, in, in_len);
+    if (ret <= 0) {
+        free(*encoded);
+        return -2;
+    }
+
+    (*encoded)[ret] = '\0';
+    return 0;
+#endif
 }
 
 
 int base64__decode(char *in, unsigned char **decoded, unsigned int *decoded_len)
 {
+#ifndef WITH_BORINGSSL
 	BIO *bmem, *b64;
 	size_t slen;
 	int len;
@@ -131,6 +147,21 @@ int base64__decode(char *in, unsigned char **decoded, unsigned int *decoded_len)
 	*decoded_len = (unsigned int)len;
 
 	return 0;
+#else
+    size_t in_len = strlen(in);
+    size_t len = (in_len * 3) / 4;
+    *decoded = (unsigned char *)malloc(len);
+    if (!*decoded) return -1;
+
+    int ret = EVP_DecodeBlock(*decoded, in, in_len);
+    if (ret < 0) {
+        free(*decoded);
+        return -2;
+    }
+
+    *decoded_len = ret;
+    return 0;
+#endif
 }
 
 

@@ -4,12 +4,12 @@ Copyright (c) 2010-2020 Roger Light <roger@atchoo.org>
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License 2.0
 and Eclipse Distribution License v1.0 which accompany this distribution.
- 
+
 The Eclipse Public License is available at
    https://www.eclipse.org/legal/epl-2.0/
 and the Eclipse Distribution License is available at
   http://www.eclipse.org/org/documents/edl-v10.php.
- 
+
 SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 
 Contributors:
@@ -75,8 +75,12 @@ ssize_t net__write(struct mosquitto *mosq, const void *buf, size_t count);
 void net__print_ssl_error(struct mosquitto *mosq);
 int net__socket_apply_tls(struct mosquitto *mosq);
 int net__socket_connect_tls(struct mosquitto *mosq);
+
+#ifndef WITH_BORINGSSL
 int mosquitto__verify_ocsp_status_cb(SSL * ssl, void *arg);
 UI_METHOD *net__get_ui_method(void);
+#endif
+
 #define ENGINE_FINISH(e) if(e) ENGINE_finish(e)
 #define ENGINE_SECRET_MODE "SECRET_MODE"
 #define ENGINE_SECRET_MODE_SHA 0x1000

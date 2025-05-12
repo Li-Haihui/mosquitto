@@ -57,7 +57,11 @@ Contributors:
 #include <openssl/conf.h>
 #include <openssl/engine.h>
 #include <openssl/err.h>
+
+#ifndef WITH_BORINGSSL
 #include <openssl/ui.h>
+#endif
+
 #include <tls_mosq.h>
 #endif
 
@@ -79,6 +83,8 @@ Contributors:
 
 #ifdef WITH_TLS
 int tls_ex_index_mosq = -1;
+
+#ifndef WITH_BORINGSSL
 UI_METHOD *_ui_method = NULL;
 
 static bool is_tls_initialized = false;
@@ -128,6 +134,8 @@ UI_METHOD *net__get_ui_method(void)
 
 #endif
 
+#endif
+
 int net__init(void)
 {
 #ifdef WIN32
@@ -159,8 +167,11 @@ void net__cleanup(void)
 	is_tls_initialized = false;
 #  endif
 
+#ifndef WITH_BORINGSSL
 	CONF_modules_unload(1);
 	cleanup_ui_method();
+#endif
+
 #endif
 
 #ifdef WITH_SRV
@@ -189,7 +200,11 @@ void net__init_tls(void)
 #if !defined(OPENSSL_NO_ENGINE)
 	ENGINE_load_builtin_engines();
 #endif
+
+#ifndef WITH_BORINGSSL
 	setup_ui_method();
+#endif
+
 	if(tls_ex_index_mosq == -1){
 		tls_ex_index_mosq = SSL_get_ex_new_index(0, "client context", NULL, NULL, NULL);
 	}

@@ -84,10 +84,10 @@ Contributors:
 #ifdef WITH_TLS
 int tls_ex_index_mosq = -1;
 
+static bool is_tls_initialized = false;
+
 #ifndef WITH_BORINGSSL
 UI_METHOD *_ui_method = NULL;
-
-static bool is_tls_initialized = false;
 
 /* Functions taken from OpenSSL s_server/s_client */
 static int ui_open(UI *ui)
@@ -568,6 +568,8 @@ int net__socket_connect_tls(struct mosquitto *mosq)
 	long res;
 
 	ERR_clear_error();
+
+#ifndef WITH_BORINGSSL
 	if (mosq->tls_ocsp_required) {
 		/* Note: OCSP is available in all currently supported OpenSSL versions. */
 		if ((res=SSL_set_tlsext_status_type(mosq->ssl, TLSEXT_STATUSTYPE_ocsp)) != 1) {
@@ -583,6 +585,7 @@ int net__socket_connect_tls(struct mosquitto *mosq)
 			return MOSQ_ERR_OCSP;
 		}
 	}
+#endif
 
 	ret = SSL_connect(mosq->ssl);
 	if(ret != 1) {
@@ -727,9 +730,11 @@ static int net__init_ssl_ctx(struct mosquitto *mosq)
 			return MOSQ_ERR_INVAL;
 		}
 
+#ifndef WITH_BORINGSSL
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 		/* Allow use of DHE ciphers */
 		SSL_CTX_set_dh_auto(mosq->ssl_ctx, 1);
+#endif
 #endif
 		/* Disable compression */
 		SSL_CTX_set_options(mosq->ssl_ctx, SSL_OP_NO_COMPRESSION);

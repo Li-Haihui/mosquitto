@@ -4,12 +4,12 @@ Copyright (c) 2009-2020 Roger Light <roger@atchoo.org>
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License 2.0
 and Eclipse Distribution License v1.0 which accompany this distribution.
- 
+
 The Eclipse Public License is available at
    https://www.eclipse.org/legal/epl-2.0/
 and the Eclipse Distribution License is available at
   http://www.eclipse.org/org/documents/edl-v10.php.
- 
+
 SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 
 Contributors:
@@ -373,8 +373,11 @@ int net__tls_server_ctx(struct mosquitto__listener *listener)
 	SSL_CTX_set_ecdh_auto(listener->ssl_ctx, 1);
 #endif
 #endif
+
+#ifndef WITH_BORINGSSL
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 	SSL_CTX_set_dh_auto(listener->ssl_ctx, 1);
+#endif
 #endif
 
 #ifdef SSL_OP_NO_RENEGOTIATION
@@ -397,6 +400,8 @@ int net__tls_server_ctx(struct mosquitto__listener *listener)
 			return MOSQ_ERR_TLS;
 		}
 	}
+
+#ifndef WITH_BORINGSSL
 #if OPENSSL_VERSION_NUMBER >= 0x10101000 && !defined(LIBRESSL_VERSION_NUMBER)
 	if(listener->ciphers_tls13){
 		rc = SSL_CTX_set_ciphersuites(listener->ssl_ctx, listener->ciphers_tls13);
@@ -405,6 +410,7 @@ int net__tls_server_ctx(struct mosquitto__listener *listener)
 			return MOSQ_ERR_TLS;
 		}
 	}
+#endif
 #endif
 
 	if(listener->dhparamfile){

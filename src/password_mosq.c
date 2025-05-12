@@ -89,7 +89,7 @@ int base64__encode(unsigned char *in, unsigned int in_len, char **encoded)
 #else
     size_t encoded_len = ((in_len + 2) / 3) * 4 + 1; // +1 for null terminator
     *encoded = (unsigned char *)malloc(encoded_len);
-    if (!*out) return -1;
+    if (!*encoded) return -1;
 
     int ret = EVP_EncodeBlock(*encoded, in, in_len);
     if (ret <= 0) {
